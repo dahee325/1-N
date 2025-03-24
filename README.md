@@ -1,7 +1,7 @@
 # 데이터 베이스 정규화
 - 목표 : 테이블 간에 중복된 데이터를 제거하는 것
 - 삽입이상, 갱신이상, 삭제이상
-
+- 게시물, 댓글 CRUD 만들기 => 두개의 CRUD 생성
 ## 0. setting
 - `python -m venv venv`
 - `source venv/Scripts/activate`
@@ -33,6 +33,7 @@
 </html>
 ```
 
+# 게시물
 ## 3. modeling
 - `articles/models.py` : `Article`클래스 생성
 ```python
@@ -305,3 +306,22 @@ def delete(request, id):
 
     return redirect('articles:index')
 ```
+
+# 댓글
+## 1. modeling
+- `articles/models.py`
+    - [Relationship fields](https://docs.djangoproject.com/en/5.1/ref/models/fields/#module-django.db.models.fields.related) : models.ForeignKey
+    - [on_delete](https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.ForeignKey.on_delete) : models.ForeingKey의 필수 옵션\
+    => PROTECT : 게시물에 댓글이 달려있으면 게시물을 지울 수 없음
+    => SET_DEFAULT : ghost계정을 만들어서 지우게되면 코드들이 저장됨
+```python
+class Comment(models.Model):
+    content = models.TextField()
+    article = models.ForeignKey(Article, on_delete=models.CASCADE) # article : 나보다 한단계 위의 부모모델(게시물)
+    # => ForeignKey() : Article모델과 Comment모델이 1:N 관계로 연결된다는 것을 의미
+    # => on_delete 옵션을 필수도 설정해야함
+```
+
+## 2. migration
+- `python manage.py makemigrations`
+- `python manage.py migrate`
