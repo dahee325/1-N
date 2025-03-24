@@ -12,10 +12,17 @@
     <a href="{% url 'articles:index' %}">articles</a>
 
     <hr>
+    
     <form action="{% url 'articles:comment_create' article.id %}" method="POST">
         {% csrf_token %}
         {{form}}
         <input type="submit">
     </form>
+
+    <hr>
+
+    {% for comment in comments %}
+        <li>{{comment.content}}</li>
+    {% endfor %}
 
 {% endblock %}

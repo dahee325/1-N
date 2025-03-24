@@ -317,7 +317,8 @@ def delete(request, id):
 ```python
 class Comment(models.Model):
     content = models.TextField()
-    article = models.ForeignKey(Article, on_delete=models.CASCADE) # article : 나보다 한단계 위의 부모모델(게시물)
+    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    # article : 나보다 한단계 위의 부모모델(게시물) / article이 실제로 저장하는 것은 article_id
     # => ForeignKey() : Article모델과 Comment모델이 1:N 관계로 연결된다는 것을 의미
     # => on_delete 옵션을 필수도 설정해야함
 ```
@@ -445,4 +446,35 @@ def comment_create(request, article_id):
 
     else:
         return redirect('articles:index')
+```
+
+## 6. Comment Read
+- `articles/views.py`
+```python
+def detail(request, id):
+    article = Article.objects.get(id=id)
+    comments = article.comment_set.all()
+    # articles = Articles.objects.all()과 같은 코드
+    # => 여기서 comments를 안만들고 detail.html에서 article.comment_set.all을 바로 사용하는 경우가 대부분
+    form = CommentForm()
+
+    context = {
+        'article': article,
+        'form': form,
+        'comments': comments,
+    }
+
+    return render(request, 'detail.html', context)
+```
+- `articles/templates/detail.html`
+```html
+{% block body %}
+
+    ...
+    <hr>
+
+    {% for comment in comments %}
+    {% endfor %}
+
+{% endblock %}
 ```
