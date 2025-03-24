@@ -325,3 +325,124 @@ class Comment(models.Model):
 ## 2. migration
 - `python manage.py makemigrations`
 - `python manage.py migrate`
+
+## 3. 댓글폼 만들기
+- `articles/forms.py`
+```python
+from django.forms import ModelForm
+from .models import Article, Comment
+
+...
+
+class CommentForm(ModelForm):
+    class Meta():
+        model = Comment
+        fields = '__all__'
+```
+- `articles/views.py` : detail함수에다가 댓글폼만들기
+```python
+from django.shortcuts import render, redirect
+from .forms import ArticleForm, CommentForm
+from .models import Article
+
+...
+
+def detail(request, id):
+    article = Article.objects.get(id=id)
+    form = CommentForm()
+
+    context = {
+        'article': article,
+        'form': form,
+    }
+
+    return render(request, 'detail.html', context)
+```
+- `articles/templates/detail.html`
+```html
+{% block body %}
+
+    ...
+    <hr>
+
+    {{form}}
+
+{% endblock %}
+```
+- `articles/forms.py` : content와 article 중 content만 나타나게 설정(article은 안보이게)
+```python
+from django.forms import ModelForm
+from .models import Article, Comment
+
+...
+class CommentForm(ModelForm):
+    class Meta():
+        model = Comment
+        # fields = '__all__'
+
+        # fields : 추가할 필드 목록
+        # fields = ('content', ) # 튜플로 설정, content와 article 중 content만 선택
+
+        # exclude : 제외할 필드 목록
+        exclude = ('article', ) # article만 제외
+```
+- `articles/templates/detail.html`
+```html
+{% block body %}
+
+    ...
+
+    <hr>
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
+
+{% endblock %}
+```
+
+## 4. 댓글 제출 경로 설정
+- `articles/templates/detail.html`
+```html
+{% block body %}
+
+    ...
+    <form action="{% url 'articles:comment_create' article.id %}" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
+
+{% endblock %}
+```
+
+## 5. Comment Create
+- `articles/views.py`
+```python
+urlpatterns = [
+    ...
+
+    # Comment
+    # Create
+    path('<int:article_id>/comments/create/', views.comment_create, name='comment_create') # 'articles/10/comments/create/'
+]
+```
+- `articles/views.py`
+```python
+def comment_create(request, article_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False) # commit=False : 데이터를 완전히 저장 X (임시저장)
+            # => article은 안보이게 설정했기 때문에 article_id가 비어있음
+            
+            article = Article.objects.get(id=article_id) # article_id 지정
+            comment.article = article
+            comment.save() # 댓글 저장
+
+            return redirect('articles:detail', id=article_id)
+
+    else:
+        return redirect('articles:index')
+```

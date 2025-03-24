@@ -9,4 +9,13 @@
     
     <a href="{% url 'articles:update' article.id %}">update</a>
     <a href="{% url 'articles:delete' article.id %}">delete</a>
+    <a href="{% url 'articles:index' %}">articles</a>
+
+    <hr>
+    <form action="{% url 'articles:comment_create' article.id %}" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
+
 {% endblock %}
