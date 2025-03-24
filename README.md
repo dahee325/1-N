@@ -475,6 +475,7 @@ def detail(request, id):
     <hr>
 
     {% for comment in comments %}
+        <li>{{comment.content}}</li>
     {% endfor %}
 
 {% endblock %}
