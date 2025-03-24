@@ -12,3 +12,5 @@
 - `django-admin startproject board .` : board 프로젝트 생성
 - `django-admin startapp articles` : articles 앱 생성
 - `board/settings.py` : articles 앱 등록
+- 최상단 폴더에 `templates` 폴더 생성
+- `1-N/templates` 폴더에 `base.html`파일 생성 => `board/settings.py`에 `templates` 폴더 연결
