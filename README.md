@@ -41,7 +41,7 @@ from django.db import models
 class Article(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 ```
 
@@ -187,5 +187,88 @@ urlpatterns = [
 ```
 - `articles/views.py`
 ```python
+def detail(request, id):
+    article = Article.objects.get(id=id)
 
+    context = {
+        'article': article,
+    }
+
+    return render(request, 'detail.html', context)
 ```
+- `articles/templates/detail.html`
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+
+    <h3>{{article.title}}</h3>
+    <p>{{article.content}}</p>
+    <p>{{article.created_at}}</p>
+    <p>{{article.updated_at}}</p>
+
+{% endblock %}
+```
+
+## 9. Update
+- `articles/templates/detail.html`
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    ...
+    <a href="{% url 'articles:update' article.id %}">update</a>
+{% endblock %}
+```
+- `articles/urls.py`
+```python
+urlpatterns = [
+    # Create
+    path('create/', views.create, name='create'),
+    # Read
+    path('', views.index, name='index'),
+    path('<int:id>', views.detail, name='detail'),
+    # Update
+    path('<int:id>/update/', views.update, name='update'),
+]
+```
+- `articles/views.py`
+```python
+def update(request, id):
+    if request.method == 'POST':
+        pass
+    else:
+        article = Article.objects.get(id=id)
+        form = ArticleForm(instance=article) # instance= : ModelForm의 옵션
+    
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'update.html', context)
+```
+- `articles/templates/update.html`
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    <form action="" method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit">
+    </form>
+{% endblock %}
+```
+- `articles/views.py` : if문 채우기
+```python
+def update(request, id):
+    article = Article.objects.get(id=id) # if문과 else문 모두 필요하므로 if문 밖으로 뺌
+
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article) # (새로운 정보, 기존 정보)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:detail', id=id) #id=id, id=article.id 같음
+    ...
+```
+- 

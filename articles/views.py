@@ -38,3 +38,22 @@ def detail(request, id):
     }
 
     return render(request, 'detail.html', context)
+
+
+def update(request, id):
+    article = Article.objects.get(id=id)
+
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, instance=article) # (새로운 정보, 기존 정보)
+        if form.is_valid():
+            form.save()
+            return redirect('articles:detail', id=id) #id=id, id=article.id 같음
+
+    else:
+        form = ArticleForm(instance=article) # instance= : ModelForm의 옵션, 기존 정보를 알려줌
+    
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'update.html', context)
