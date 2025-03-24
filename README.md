@@ -211,7 +211,7 @@ def detail(request, id):
 ```
 
 ## 9. Update
-- `articles/templates/detail.html`
+- `articles/templates/detail.html` : update 버튼 생성
 ```html
 {% extends 'base.html' %}
 
@@ -271,4 +271,37 @@ def update(request, id):
             return redirect('articles:detail', id=id) #id=id, id=article.id 같음
     ...
 ```
-- 
+
+## 10. Delete
+- `articles/templates/detail.html` : delete 버튼 생성
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    ...
+    <a href="{% url 'articles:update' article.id %}">update</a>
+    <a href="{% url 'articles:delete' article.id %}">delete</a>
+{% endblock %}
+```
+- `articles/urls.py`
+```python
+urlpatterns = [
+    # Create
+    path('create/', views.create, name='create'),
+    # Read
+    path('', views.index, name='index'),
+    path('<int:id>', views.detail, name='detail'),
+    # Update
+    path('<int:id>/update/', views.update, name='update'),
+    # Delete
+    path('<int:id>/delete/', views.delete, name='delete'),
+]
+```
+- `articles/views.py`
+```python
+def delete(request, id):
+    article = Article.objects.get(id=id)
+    article.delete()
+
+    return redirect('articles:index')
+```

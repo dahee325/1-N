@@ -12,4 +12,5 @@ urlpatterns = [
     # Update
     path('<int:id>/update/', views.update, name='update'),
     # Delete
+    path('<int:id>/delete/', views.delete, name='delete'),
 ]
