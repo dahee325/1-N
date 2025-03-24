@@ -128,4 +128,64 @@ def create(request):
             return redirect('articles:index') # 아직 index를 만들지는 않음
     ...
 ```
-- 
+-
+## 7. Read(ALL)
+- `articles/urls.py`
+```python
+urlpatterns = [
+    # Create
+    path('create/', views.create, name='create'),
+    # Read
+    path('', views.index, name='index'),
+]
+```
+- `articles/views.py`
+```python
+from .models import Article
+
+def index(request):
+    articles = Article.objects.all()
+
+    context = {
+        'articles': articles,
+    }
+    
+    return render(request, 'index.html', context)
+```
+- `articles/templates` 폴더 안에 `index.html` 파일 생성
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    {% for article in articles %}
+    <h3>{{article.title}}</h3>
+    {% endfor %}
+{% endblock %}
+```
+
+## 8. Read(1)
+- `articles/templates/index.html`
+```html
+{% extends 'base.html' %}
+
+{% block body %}
+    {% for article in articles %}
+    <h3>{{article.title}}</h3>
+    <a href="{% url 'articles:detail' article.id %}">detail</a>
+    {% endfor %}
+{% endblock %}
+```
+- `articles/urls.py`
+```python
+urlpatterns = [
+    # Create
+    path('create/', views.create, name='create'),
+    # Read
+    path('', views.index, name='index'),
+    path('<int:id>', views.detail, name='detail'),
+]
+```
+- `articles/views.py`
+```python
+
+```
