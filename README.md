@@ -478,3 +478,45 @@ def detail(request, id):
 
 {% endblock %}
 ```
+
+## 7. Comment Update
+- 수정하는 페이지를 현재 페이지로 두고 수정해야함 => 자바 스크립트 사용
+
+## 8. Comment Delete
+- `articles/templates/detail.html`
+```html
+{% block body %}
+
+    ...
+
+    {% for comment in comments %}
+        <li>{{comment.content}}</li>
+        <a href="{% url 'articles:comment_delete' article.id comment.id %}">delete</a>
+    {% endfor %}
+
+{% endblock %}
+```
+- `articles/urls.py`
+```python
+urlpatterns = [
+    ...
+
+    # Comment
+    # Create
+    path('<int:article_id>/comments/create/', views.comment_create, name='comment_create'), # 'articles/10/comments/create/'
+    # Delete
+    path('<int:article_id>/comments/<int:id>/delete/', views.comment_delete, name='comment_delete'),
+]
+```
+- `articles/views.py`
+```python
+from django.shortcuts import render, redirect
+from .forms import ArticleForm, CommentForm
+from .models import Article, Comment
+
+def comment_delete(request, article_id, id):
+    comment = Comment.objects.get(id=id)
+    comment.delete()
+
+    return redirect('articles:detail', id=article_id)
+```
