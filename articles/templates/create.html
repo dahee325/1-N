@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<form action="" method="POST">
+    {% csrf_token %} <!--method="POST"이면 작성해야함-->
+    {{form}}
+    <input type="submit">
+</form>
+{% endblock %}
