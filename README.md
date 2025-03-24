@@ -312,8 +312,8 @@ def delete(request, id):
 - `articles/models.py`
     - [Relationship fields](https://docs.djangoproject.com/en/5.1/ref/models/fields/#module-django.db.models.fields.related) : models.ForeignKey
     - [on_delete](https://docs.djangoproject.com/en/5.1/ref/models/fields/#django.db.models.ForeignKey.on_delete) : models.ForeingKey의 필수 옵션\
-    => PROTECT : 게시물에 댓글이 달려있으면 게시물을 지울 수 없음
-    => SET_DEFAULT : ghost계정을 만들어서 지우게되면 코드들이 저장됨
+    => PROTECT : 게시물에 댓글이 달려있으면 게시물을 지울 수 없음\
+    => SET_DEFAULT : ghost계정을 만들어서 지우게되면 코드들이 저장됨\
     => CASCADE : 부모모델의 데이터가 지워지면 자식모델의 데이터도 자동으로 지워짐
 ```python
 class Comment(models.Model):
