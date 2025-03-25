@@ -522,3 +522,47 @@ def comment_delete(request, article_id, id):
 
     return redirect('articles:detail', id=article_id)
 ```
+
+# bootstrap
+- `templates/base.html`
+```html
+<head>
+    ...
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        {% block body %}
+        
+        {% endblock %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+```
+
+### {{form}}에 bootstrap 적용시키기
+- [widget](https://docs.djangoproject.com/en/5.1/ref/forms/widgets/) : 저장하고싶은 변수에 속성을 추가하는 것
+    - `articles/forms.py`
+    1. 컬럼 이름을 그대로 적고 `forms.()`안의 `widget`옵션으로 `attrs={}`를 주는 것
+    ```python
+    from django import forms
+
+    class ArticleForm(ModelForm):
+        title = forms.CharField( # title 덮어씌우기
+            widget=forms.TextInput(
+                attrs={'class': 'form-control'}
+            )
+        )
+        ...
+    ```
+    2. `widgets={}`안에 `attrs`를 넣는 방법
+    ```python
+    class ArticleForm(ModelForm):
+        ...
+        class Meta():
+            model = Article
+            fields = '__all__'
+            widgets = {
+                'content': forms.Textarea(attrs={'class': 'form-control'}),
+            }
+    ```

@@ -1,10 +1,19 @@
 from django.forms import ModelForm
+from django import forms
 from .models import Article, Comment
 
 class ArticleForm(ModelForm):
+    title = forms.CharField( # title 덮어씌우기
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'}
+        )
+    )
     class Meta():
         model = Article
         fields = '__all__'
+        widgets = {
+            'content': forms.Textarea(attrs={'class': 'form-control'}),
+        }
 
 
 class CommentForm(ModelForm):
